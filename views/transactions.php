@@ -1,9 +1,3 @@
-<?php
-
-require_once __DIR__ .'/../app/app.php';
-$dataRows = readFiles($filenames);
-
-?>
 <!DOCTYPE html>
 <html>
     <head>
@@ -43,7 +37,7 @@ $dataRows = readFiles($filenames);
                 <tr>
                     <?php for ($i = 1; $i < count($dataRows); $i++): ?>      
                         <tr>
-                        <td><?= htmlspecialchars(date('M j, Y', strtotime($dataRows[$i][0])) ?? ''); ?></td>
+                        <td><?= htmlspecialchars($dataRows[$i][0] ?? ''); ?></td>
                         <td><?= htmlspecialchars($dataRows[$i][1] ?? ''); ?></td>
                         <td><?= htmlspecialchars($dataRows[$i][2] ?? ''); ?></td>
 

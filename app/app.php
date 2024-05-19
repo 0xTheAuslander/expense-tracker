@@ -2,11 +2,18 @@
 
 declare(strict_types = 1);
 
-// Your Code
+$filenames = getCsvFiles(FILES_PATH);
+$dataRows = readFiles($filenames);
+$dataColumns = processFile($filenames);
+[
+    'totalIncome' => $income, 
+    'totalExpense' => $expenses, 
+    'netTotal' => $net,
+] = CalculateExpenses($dataColumns);
 
-$dir = '../transaction_files/'; 
+// implementation of needed functions
 
-
+// scan the transaction_files directory to get the data from csv files
 function getCsvFiles(string $dir): array {
 
     $files = scandir($dir); 
@@ -26,11 +33,8 @@ function getCsvFiles(string $dir): array {
     return $filenames;
 }
 
-$filenames = getCsvFiles($dir);
-
 
 //Read file rows
-
 function readFiles(array $filenames): array {
 
     $data = []; // Initialize an empty array to hold the data
@@ -50,7 +54,11 @@ function readFiles(array $filenames): array {
         // Close the file
         fclose($f);
     }
-
+    
+    // format the dates
+    for ($i = 1; $i < count($data); $i++) { 
+        $data[$i][0] = date('M j, Y', strtotime($data[$i][0]));
+    }
     return $data;
 }
 // Read the CSV file and store the data into an array
@@ -83,23 +91,24 @@ function processFile(array $filenames) {
         // Close the file
         fclose($f);
     }
-
     return $data;
 }
 
 // Calculate total income, total expenses, and Net total
-$dataColumns = processFile($filenames);
-function Calculate(array $dataColumns): array { 
+function CalculateExpenses(array $dataColumns): array { 
     $result = [
         'totalIncome' => 0,
         'totalExpense' => 0,
         'netTotal' => 0,
     ];
-    $amount = $dataColumns['amount'] = str_replace('$','', $dataColumns['amount']);
 
-    foreach ($amount as $amountItem) {
-        $result['totalIncome'] += (float) $amountItem > 0 ? (float) $amountItem: 0;
-        $result['totalExpense'] += (float) $amountItem < 0 ? (float) $amountItem : 0;
+    
+    foreach ($dataColumns['amount'] as $amountItem) {
+        // Clean the amount values by removing the $ and ,
+        $amountItem = (float) str_replace(['$', ','], '', $amountItem);
+        // echo ''. $amountItem .'<br>';
+        $result['totalIncome'] += $amountItem > 0 ? $amountItem: 0;
+        $result['totalExpense'] += $amountItem < 0 ? $amountItem : 0;
 
         $result['netTotal'] = $result['totalIncome'] + $result['totalExpense'];
     }
@@ -108,9 +117,5 @@ function Calculate(array $dataColumns): array {
 }
 
 
-[
-    'totalIncome' => $income, 
-    'totalExpense' => $expenses, 
-    'netTotal' => $net,
-] = Calculate($dataColumns);
+
 
