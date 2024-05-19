@@ -34,34 +34,41 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <?php for ($i = 1; $i < count($dataRows); $i++): ?>      
+                <?php if (! empty($transactions)): ?>
+                    <?php foreach($transactions as $transaction): ?>
                         <tr>
-                        <td><?= htmlspecialchars($dataRows[$i][0] ?? ''); ?></td>
-                        <td><?= htmlspecialchars($dataRows[$i][1] ?? ''); ?></td>
-                        <td><?= htmlspecialchars($dataRows[$i][2] ?? ''); ?></td>
-
-                        <?php if (str_replace('$','', $dataRows[$i][3]) > 0): ?>
-                            <td style="color: green;"><?= htmlspecialchars($dataRows[$i][3] ?? ''); ?></td> 
-                        <?php else: ?>
-                            <td style="color: red;"><?= htmlspecialchars($dataRows[$i][3] ?? ''); ?></td> 
-                        <?php endif; ?>
+                            <td><?= formatDate($transaction['date']) ?></td>
+                            <td><?= $transaction['checkNumber'] ?></td>
+                            <td><?= $transaction['description'] ?></td>
+                            <td>
+                                <?php if ($transaction['amount'] < 0): ?>
+                                    <span style="color: red;">
+                                        <?= formatDollarAmount($transaction['amount']) ?>
+                                    </span>
+                                <?php elseif ($transaction['amount'] > 0): ?>
+                                    <span style="color: green;">
+                                        <?= formatDollarAmount($transaction['amount']) ?>
+                                    </span>
+                                <?php else: ?>
+                                    <?= formatDollarAmount($transaction['amount']) ?>
+                                <?php endif ?>
+                            </td>
                         </tr>
-                    <?php endfor; ?>
-                </tr>
+                    <?php endforeach ?>
+                <?php endif ?>
             </tbody>
             <tfoot>
                 <tr>
                     <th colspan="3">Total Income:</th>
-                    <td><?= $income ?></td>
+                    <td><?= formatDollarAmount($totals['totalIncome'] ?? 0) ?></td>
                 </tr>
                 <tr>
                     <th colspan="3">Total Expense:</th>
-                    <td ><?= $expenses ?></td>
+                    <td><?= formatDollarAmount($totals['totalExpense'] ?? 0) ?></td>
                 </tr>
                 <tr>
                     <th colspan="3">Net Total:</th>
-                    <td><?= $net ?></td>
+                    <td><?= formatDollarAmount($totals['netTotal'] ?? 0) ?></td>
                 </tr>
             </tfoot>
         </table>
